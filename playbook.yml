@@ -1,0 +1,35 @@
+---
+- name: Test Ansible Execution Environment
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: Test basic task
+      ansible.builtin.debug:
+        msg: "✅ Ansible EE is working correctly"
+
+    - name: Create a test file
+      ansible.builtin.file:
+        path: /tmp/ansible-ee-test.txt
+        state: touch
+        mode: '0644'
+
+    - name: Write to test file
+      ansible.builtin.copy:
+        content: "Ansible EE test successful"
+        dest: /tmp/ansible-ee-test.txt
+
+    - name: Read test file (slurp)
+      ansible.builtin.slurp:
+        src: /tmp/ansible-ee-test.txt
+      register: file_contents
+
+    - name: Show file contents
+      ansible.builtin.debug:
+        msg: "{{ file_contents.content | b64decode }}"
+
+    - name: Remove test file
+      ansible.builtin.file:
+        path: /tmp/ansible-ee-test.txt
+        state: absent
